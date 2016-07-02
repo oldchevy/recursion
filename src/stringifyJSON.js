@@ -37,7 +37,7 @@ var stringifyJSON = function(obj) {
 
   //Recursive buildup for arrays
   //Ditto, the second condition catches empty arrays
-  else if(typeof obj === 'array' || obj instanceof Array){
+  else if(obj instanceof Array){
   	for(var i = 0; i<obj.length; i++){
   		if(Abool){
   			Astr += stringifyJSON(obj[i]);
