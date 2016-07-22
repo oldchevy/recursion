@@ -7,8 +7,8 @@ var parseJSON = function(json) {
 	//or array, to call a recursive function which returns that entire new object parsed
 	var building;
 
-	var objects = json.match(/{(.*)}/); //Greedy method makes sure only the outermost is selected
-  	var arrays = json.match(/\[(.*)\]/);
+	var objects = json.match(/^{(.*)}$/); //Greedy method makes sure only the outermost is selected
+  	var arrays = json.match(/^\[(.*)\]$/);
   
   	//console.log(objects, arrays);
 
@@ -36,14 +36,14 @@ var parseJSON = function(json) {
 
       	while(bool){
       		bool = false;
-      		var nextEntry = workingObj.match(/("(.*?)":([0-9\.eE+-]+|\".*?\"|\[.*?\])),(.*)/) ||
-      						workingObj.match(/"(.*?)":(.*)/);
+      		var nextEntry = workingObj.match(/^("(.*?)":([0-9\.eE+-]+|\".*?\"|\[.*?\])),(.*)/) ||
+      						workingObj.match(/^("(.*?)":(.*))/);
       		console.log(nextEntry);
         	if(nextEntry){
-        		building[nextEntry[1]] = findVal(nextEntry[2]);
+        		building[nextEntry[2]] = findVal(nextEntry[3]);
         	}
-        	if(nextEntry[3]){
-        		workingObj = nextEntry[3];
+        	if(nextEntry[4]){
+        		workingObj = nextEntry[4];
         		bool = true;
         	}
       	}
@@ -56,14 +56,21 @@ var parseJSON = function(json) {
 
       	while(bool){
       		bool = false;
-      		var nextEntry = workingObj.match(/(.*?),(.*)/) ||
+      		var nextEntry = workingObj.match(/^(\".*?\"),(.*)/) ||
+      						workingObj.match(/^(\[.*\]),(.*)/) ||
+      						workingObj.match(/^(\{.*\}),(.*)/) ||
+      						workingObj.match(/^([+-]?(\d+|\d*\.\d+|\d+\.\d*)([eE][+-]?\d+)?),(.*)/) ||
       						workingObj.match(/(.*)/);
+      						//Use short circuit evaluation to make sure
+      						//we don't accidentally grab an entry inside a larger
+      						//entry.
+
       		console.log(nextEntry);
-        	if(nextEntry){
+        	if(nextEntry[0].length > 0){
         		building.push(findVal(nextEntry[1]));
         	}
-        	if(nextEntry[2]){
-        		workingObj = nextEntry[2];
+        	if(nextEntry.length > 2){
+        		workingObj = nextEntry[nextEntry.length-1];
         		bool = true;
         	}
       	}
