@@ -12,6 +12,7 @@ var getElementsByClassName = function(className, element) {
 
 	//Checks where to begin from, and saves working point if not the top
 	var workingElement = element ? element : document.body;
+	// element = element || document.body;
 
 	//If an element has no classes, classList is undefined so we must check that first.
 	//Then check to see if the class list contains the target
@@ -27,13 +28,14 @@ var getElementsByClassName = function(className, element) {
 		for (var i=0; i<workingElement.childNodes.length; i++){
 			var next = getElementsByClassName(className, workingElement.childNodes[i]);
 			if (next)
-				elementArray.push(next);
+				elementArray = elementArray.concat(next);
+				//can fix the flatten issue with concat i'm pretty sure
 		}
 
 	}
 
 	// If nothing has been built up, nothing is returned. Also, flatten the
 	// array inside the recursive call.
-	return elementArray.length > 0 ? _.flatten(elementArray) : undefined;
+	return elementArray.length > 0 ? elementArray : undefined;
   	
 };
